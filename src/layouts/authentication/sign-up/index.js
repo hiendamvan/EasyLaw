@@ -32,7 +32,40 @@ import CoverLayout from "layouts/authentication/components/CoverLayout";
 // Images
 import bgImage from "assets/images/bg-sign-up-cover.jpeg";
 
+import { useState } from "react";
+
 function Cover() {
+  const [formDate, setFormData] = useState({
+    username: "",
+    password: "",
+    email: "",
+    birthday: "",
+  });
+
+  const changeHandler = (e) => {
+    setFormData({ ...formDate, [e.target.name]: e.target.value });
+  };
+  // API signup
+  const signup = async () => {
+    console.log("Signup Function Executed", formDate);
+    let responseDate;
+    await fetch("http://localhost:4000/signup", {
+      method: "POST",
+      headers: {
+        Accept: "application/form-data",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formDate),
+    })
+      .then((response) => response.json())
+      .then((data) => (responseDate = data));
+    if (responseDate.success) {
+      localStorage.setItem("auth-token", responseDate.token);
+      window.location.replace("/");
+    } else {
+      alert(responseDate.errors);
+    }
+  };
   return (
     <CoverLayout image={bgImage}>
       <Card>
@@ -57,13 +90,45 @@ function Cover() {
         <MDBox pt={4} pb={3} px={3}>
           <MDBox component="form" role="form">
             <MDBox mb={2}>
-              <MDInput type="text" label="Name" variant="standard" fullWidth />
+              <MDInput
+                type="text"
+                label="Name"
+                variant="standard"
+                onChange={changeHandler}
+                fullWidth
+                name="username"
+              />
+            </MDBox>
+
+            <MDBox mb={2}>
+              <MDInput
+                type="Date"
+                label="Birthday"
+                variant="standard"
+                name="birthday"
+                onChange={changeHandler}
+                fullWidth
+              />
             </MDBox>
             <MDBox mb={2}>
-              <MDInput type="email" label="Email" variant="standard" fullWidth />
+              <MDInput
+                type="email"
+                label="Email"
+                variant="standard"
+                name="email"
+                onChange={changeHandler}
+                fullWidth
+              />
             </MDBox>
             <MDBox mb={2}>
-              <MDInput type="password" label="Password" variant="standard" fullWidth />
+              <MDInput
+                type="password"
+                label="Password"
+                variant="standard"
+                name="password"
+                onChange={changeHandler}
+                fullWidth
+              />
             </MDBox>
             <MDBox display="flex" alignItems="center" ml={-1}>
               <Checkbox />
@@ -87,8 +152,8 @@ function Cover() {
               </MDTypography>
             </MDBox>
             <MDBox mt={4} mb={1}>
-              <MDButton variant="gradient" color="info" fullWidth>
-                sign in
+              <MDButton variant="gradient" color="info" fullWidth onClick={signup}>
+                Sign up
               </MDButton>
             </MDBox>
             <MDBox mt={3} mb={1} textAlign="center">

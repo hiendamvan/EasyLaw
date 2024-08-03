@@ -42,9 +42,39 @@ import BasicLayout from "layouts/authentication/components/BasicLayout";
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
 
 function Basic() {
+  const [formDate, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const changeHandler = (e) => {
+    setFormData({ ...formDate, [e.target.name]: e.target.value });
+  };
+
   const [rememberMe, setRememberMe] = useState(false);
 
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
+
+  const login = async () => {
+    console.log("Login Function Executed", formDate);
+    let responseDate;
+    await fetch("http://localhost:4000/login", {
+      method: "POST",
+      headers: {
+        Accept: "application/form-data",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formDate),
+    })
+      .then((response) => response.json())
+      .then((data) => (responseDate = data));
+    if (responseDate.success) {
+      localStorage.setItem("auth-token", responseDate.token);
+      window.location.replace("/");
+    } else {
+      alert(responseDate.errors);
+    }
+  };
 
   return (
     <BasicLayout image={bgImage}>
@@ -84,10 +114,16 @@ function Basic() {
         <MDBox pt={4} pb={3} px={3}>
           <MDBox component="form" role="form">
             <MDBox mb={2}>
-              <MDInput type="email" label="Email" fullWidth />
+              <MDInput type="email" label="Email" name="email" onChange={changeHandler} fullWidth />
             </MDBox>
             <MDBox mb={2}>
-              <MDInput type="password" label="Password" fullWidth />
+              <MDInput
+                type="password"
+                label="Password"
+                name="password"
+                onChange={changeHandler}
+                fullWidth
+              />
             </MDBox>
             <MDBox display="flex" alignItems="center" ml={-1}>
               <Switch checked={rememberMe} onChange={handleSetRememberMe} />
@@ -102,7 +138,7 @@ function Basic() {
               </MDTypography>
             </MDBox>
             <MDBox mt={4} mb={1}>
-              <MDButton variant="gradient" color="info" fullWidth>
+              <MDButton variant="gradient" color="info" onClick={login} fullWidth>
                 sign in
               </MDButton>
             </MDBox>

@@ -44,6 +44,7 @@ import Notifications from "layouts/notifications";
 import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
+import SignOut from "layouts/authentication/sign-out";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -110,12 +111,20 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Sign In",
-    key: "sign-in",
-    icon: <Icon fontSize="small">login</Icon>,
-    route: "/authentication/sign-in",
-    component: <SignIn />,
+    name: localStorage.getItem("auth-token") ? "Sign out" : "Sign in",
+    key: "sign-in-out",
+    icon: <Icon fontSize="small">Sign In</Icon>,
+    route: "/authentication/sign-in-out", // Adjust the route if needed
+    component: localStorage.getItem("auth-token") ? <SignOut /> : <SignIn />,
   },
+  // {
+  //   type: "collapse",
+  //   name: "Sign In",
+  //   key: "sign-in",
+  //   icon: <Icon fontSize="small">login</Icon>,
+  //   route: "/authentication/sign-in",
+  //   component: <SignIn />,
+  // },
   {
     type: "collapse",
     name: "Sign Up",
